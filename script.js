@@ -2,44 +2,53 @@ const leftEye = document.getElementById('left-eye');
 const rightEye = document.getElementById('right-eye');
 const video = document.getElementById('webcam');
 const canvas = document.getElementById('canvas');
-
-// Tu API Key de Gemini
 const API_KEY = "AIzaSyDQS_9xHC8Hn2Y6AkFg-8klHBcQyF0cW-8";
 
-// 1. SEGUIMIENTO DE MIRADA: El ojo completo se mueve
-document.addEventListener('mousemove', (e) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 70; 
-    const y = (e.clientY / window.innerHeight - 0.5) * 45;
-    
-    [leftEye, rightEye].forEach(eye => {
-        if (!eye.classList.contains('blink')) {
-            // Mueve y rota un poco para dar efecto 3D
-            eye.style.transform = `translate(${x}px, ${y}px) rotateY(${x/3}deg) rotateX(${-y/3}deg)`;
-        }
-    });
-});
+let isAppStarted = false;
 
-// 2. PESTAÑEO: Cada 5 segundos exactos
+async function startApp() {
+    document.getElementById('overlay').style.display = 'none';
+    isAppStarted = true;
+    
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    video.srcObject = stream;
+    
+    startBlinking();
+    startListening();
+    setInterval(thinkAndSee, 5000); // Analiza cada 5 segundos
+}
+
+// 1. Pestañeo cada 5 segundos
 function startBlinking() {
     setInterval(() => {
         leftEye.classList.add('blink');
         rightEye.classList.add('blink');
-        
         setTimeout(() => {
             leftEye.classList.remove('blink');
             rightEye.classList.remove('blink');
         }, 150);
-    }, 5000); 
+    }, 5000);
 }
 
-// 3. IA: Mirar el entorno y reaccionar
-async function analyzeSense() {
-    if (!video.videoWidth) return;
+// 2. Escuchar voz y convertir a texto
+function startListening() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-DO';
+    recognition.continuous = true;
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    const base64Image = canvas.toDataURL('image/jpeg').split(',')[1];
+    recognition.onresult = (event) => {
+        const text = event.results[event.results.length - 1][0].transcript;
+        askGemini(text);
+    };
+    recognition.start();
+}
+
+// 3. Hablar con Gemini
+async function askGemini(prompt) {
+    canvas.width = 300; canvas.height = 300;
+    canvas.getContext('2d').drawImage(video, 0, 0, 300, 300);
+    const image = canvas.toDataURL('image/jpeg').split(',')[1];
 
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
@@ -47,36 +56,42 @@ async function analyzeSense() {
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: "Mira la cara del usuario y su entorno. Si parece enojado o insulta, responde ENOJO. Si se asusta, SUSTO. Si todo está normal, NORMAL. Responde solo una palabra." },
-                        { inline_data: { mime_type: "image/jpeg", data: base64Image } }
+                        { text: `Eres ByNode. Mira esta imagen y responde a: "${prompt}". Responde corto y dominicano.` },
+                        { inline_data: { mime_type: "image/jpeg", data: image } }
                     ]
                 }]
             })
         });
         const data = await response.json();
-        const mood = data.candidates[0].content.parts[0].text.trim().toUpperCase();
-        applyMood(mood);
-    } catch (err) {
-        console.log("Conectando con el cerebro de ByNode...");
-    }
+        const reply = data.candidates[0].content.parts[0].text;
+        speak(reply);
+    } catch (e) { console.error(e); }
 }
 
-function applyMood(mood) {
-    [leftEye, rightEye].forEach(el => el.classList.remove('angry', 'scared'));
-
-    if (mood === 'ENOJO') {
-        leftEye.classList.add('angry');
-        rightEye.classList.add('angry');
-    } else if (mood === 'SUSTO') {
-        leftEye.classList.add('scared');
-        rightEye.classList.add('scared');
-    }
+// 4. Voz de la App
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'es-MX';
+    utterance.onstart = () => {
+        leftEye.classList.add('talking');
+        rightEye.classList.add('talking');
+    };
+    utterance.onend = () => {
+        leftEye.classList.remove('talking');
+        rightEye.classList.remove('talking');
+    };
+    window.speechSynthesis.speak(utterance);
 }
 
-// 4. INICIAR TODO
-navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(stream => { video.srcObject = stream; })
-    .catch(err => alert("Patrón, acepte la cámara para que ByNode vea."));
-
-startBlinking();
-setInterval(analyzeSense, 4000); // Analiza cada 4 segundos
+// 5. Mirar alrededor (Personas u Objetos)
+async function thinkAndSee() {
+    if (!isAppStarted) return;
+    
+    // Aquí simulamos que los ojos se mueven buscando cosas
+    const randomX = (Math.random() - 0.5) * 100;
+    const randomY = (Math.random() - 0.5) * 60;
+    
+    [leftEye, rightEye].forEach(eye => {
+        eye.style.transform = `translate(${randomX}px, ${randomY}px)`;
+    });
+}

@@ -1,54 +1,32 @@
 body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
     background-color: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex; justify-content: center; align-items: center;
     overflow: hidden;
 }
 
-.eye-container {
-    display: flex;
-    gap: 60px;
-    perspective: 1000px;
+#overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); color: white;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 100; cursor: pointer; font-family: sans-serif;
 }
 
-/* Ojos Squircle Naranjas */
+.eye-container { display: flex; gap: 50px; perspective: 1000px; }
+
 .eye {
-    width: 150px;
-    height: 100px;
-    /* Degradado naranja normal a oscuro */
+    width: 150px; height: 100px;
     background: linear-gradient(180deg, #ff9500 0%, #ff5e00 60%, #802f00 100%);
-    border-radius: 40px; /* Forma cuadrada redondeada del concepto */
-    position: relative;
-    transition: transform 0.1s ease-out, background 0.4s ease, height 0.1s ease, border-radius 0.3s ease;
+    border-radius: 40px;
+    transition: all 0.2s ease-out;
     box-shadow: 0 0 30px rgba(255, 94, 0, 0.4);
 }
 
-/* --- ESTADOS INTERACTIVOS --- */
+.blink { height: 4px !important; border-radius: 2px; }
+.talking { animation: pulse 0.5s infinite alternate; }
 
-/* 1. ENOJO: Ojo Rojo */
-.eye.angry {
-    background: linear-gradient(180deg, #ff3b30 0%, #ff0000 60%, #800000 100%) !important;
-    box-shadow: 0 0 40px rgba(255, 0, 0, 0.7) !important;
-}
-
-/* Inclinación de enojo */
-#left-eye.angry { transform: rotate(15deg); }
-#right-eye.angry { transform: rotate(-15deg); }
-
-/* 2. SUSTO: Se vuelven circulares y grandes */
-.eye.scared {
-    transform: scale(1.3);
-    border-radius: 75px;
-    filter: brightness(1.2);
-}
-
-/* 3. PESTAÑEO: Se cierran a una línea */
-.eye.blink {
-    height: 4px !important;
-    border-radius: 2px;
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
 }
