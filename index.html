@@ -3,20 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
     <title>ByNode AI</title>
 </head>
 <body>
-    <!-- El botón es necesario para que el iPhone suelte el audio y video -->
-    <div id="overlay" onclick="startApp()">
-        <p>Toca para despertar a ByNode</p>
-    </div>
-
+    <div id="overlay" onclick="startApp()">Toca para activar a ByNode</div>
     <div class="app-container">
-        <video id="webcam" autoplay playsinline muted style="display:none;"></video>
-        <canvas id="canvas" style="display:none;"></canvas>
-
+        <video id="webcam" autoplay playsinline style="display:none;"></video>
         <div class="eye-container">
             <div class="eye" id="left-eye"></div>
             <div class="eye" id="right-eye"></div>
