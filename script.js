@@ -3,18 +3,18 @@ const rightEye = document.getElementById('right-eye');
 const video = document.getElementById('webcam');
 const canvas = document.getElementById('canvas');
 
+// Tu API Key de Gemini
 const API_KEY = "AIzaSyDQS_9xHC8Hn2Y6AkFg-8klHBcQyF0cW-8";
 
-// 1. MOVIMIENTO REALISTA: El ojo entero se mueve
+// 1. SEGUIMIENTO DE MIRADA: El ojo completo se mueve
 document.addEventListener('mousemove', (e) => {
-    // Calculamos la posición del mouse
-    const x = (e.clientX / window.innerWidth - 0.5) * 60; // Desplazamiento lateral
-    const y = (e.clientY / window.innerHeight - 0.5) * 40; // Desplazamiento vertical
+    const x = (e.clientX / window.innerWidth - 0.5) * 70; 
+    const y = (e.clientY / window.innerHeight - 0.5) * 45;
     
-    // Aplicamos el movimiento a los ojos
     [leftEye, rightEye].forEach(eye => {
         if (!eye.classList.contains('blink')) {
-            eye.style.transform = `translate(${x}px, ${y}px) rotateY(${x/2}deg) rotateX(${-y/2}deg)`;
+            // Mueve y rota un poco para dar efecto 3D
+            eye.style.transform = `translate(${x}px, ${y}px) rotateY(${x/3}deg) rotateX(${-y/3}deg)`;
         }
     });
 });
@@ -29,11 +29,11 @@ function startBlinking() {
             leftEye.classList.remove('blink');
             rightEye.classList.remove('blink');
         }, 150);
-    }, 5000); // 5000ms = 5 segundos
+    }, 5000); 
 }
 
-// 3. IA: Detectar entorno y emociones
-async function checkEmotions() {
+// 3. IA: Mirar el entorno y reaccionar
+async function analyzeSense() {
     if (!video.videoWidth) return;
 
     canvas.width = video.videoWidth;
@@ -47,7 +47,7 @@ async function checkEmotions() {
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: "Analiza al usuario. Si parece molesto o insulta, responde ENOJO. Si se ve asustado, SUSTO. Si todo está bien, NORMAL. Solo una palabra." },
+                        { text: "Mira la cara del usuario y su entorno. Si parece enojado o insulta, responde ENOJO. Si se asusta, SUSTO. Si todo está normal, NORMAL. Responde solo una palabra." },
                         { inline_data: { mime_type: "image/jpeg", data: base64Image } }
                     ]
                 }]
@@ -55,13 +55,13 @@ async function checkEmotions() {
         });
         const data = await response.json();
         const mood = data.candidates[0].content.parts[0].text.trim().toUpperCase();
-        
-        updateMood(mood);
-    } catch (err) { console.log("Reintentando IA..."); }
+        applyMood(mood);
+    } catch (err) {
+        console.log("Conectando con el cerebro de ByNode...");
+    }
 }
 
-function updateMood(mood) {
-    // Limpiamos estados
+function applyMood(mood) {
     [leftEye, rightEye].forEach(el => el.classList.remove('angry', 'scared'));
 
     if (mood === 'ENOJO') {
@@ -73,10 +73,10 @@ function updateMood(mood) {
     }
 }
 
-// Iniciar todo
+// 4. INICIAR TODO
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(s => { video.srcObject = s; })
-    .catch(e => console.log("Activa la cámara, patrón"));
+    .then(stream => { video.srcObject = stream; })
+    .catch(err => alert("Patrón, acepte la cámara para que ByNode vea."));
 
 startBlinking();
-setInterval(checkEmotions, 4000); // Chequea cada 4 segundos
+setInterval(analyzeSense, 4000); // Analiza cada 4 segundos
