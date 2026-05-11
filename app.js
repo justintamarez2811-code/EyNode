@@ -32,7 +32,11 @@ function blinkEyes() {
   setTimeout(() => eyes.forEach(eye => eye.classList.remove('blink')), 180);
 }
 
-function reactEyes() {
+function startAutoBlink() {
+  setInterval(() => {
+    blinkEyes();
+  }, 5000);
+}
   eyes.forEach(eye => eye.classList.add('react'));
   setTimeout(() => eyes.forEach(eye => eye.classList.remove('react')), 900);
 }
@@ -165,6 +169,7 @@ window.addEventListener('load', () => {
   document.body.style.background = '#000';
   startRecognition();
   startCameraTracking();
+  startAutoBlink();
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW falló', err));
   }
