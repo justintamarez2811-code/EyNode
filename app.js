@@ -82,6 +82,66 @@ function updatePupilPosition(x, y) {
   });
 }
 
+function handleDeviceOrientation(event) {
+  const alpha = event.alpha || 0; // Rotación Z (0-360)
+  const beta = event.beta || 0;   // Rotación X (-180 a 180)
+  const gamma = event.gamma || 0; // Rotación Y (-90 a 90)
+
+  const normalizedX = gamma / 90;
+  const normalizedY = beta / 180;
+
+  updatePupilPosition(normalizedX, normalizedY);
+}
+
+function startDeviceOrientation() {
+  if (typeof DeviceOrientationEvent !== 'undefined') {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            window.addEventListener('deviceorientation', handleDeviceOrientation);
+          }
+        })
+        .catch(console.warn);
+    } else {
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+    }
+  }
+}
+
+function handleMouseMove(event) {
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+  const normalizedX = (event.clientX - centerX) / centerX;
+  const normalizedY = (event.clientY - centerY) / centerY;
+  updatePupilPosition(normalizedX, normalizedY);
+}
+
+function startMouseTracking() {
+  window.addEventListener('mousemove', handleMouseMove);
+}
+
+function startExploratoryLook() {
+  const moveEyes = () => {
+    const randomX = (Math.random() - 0.5) * 2;
+    const randomY = (Math.random() - 0.5) * 2;
+    updatePupilPosition(randomX, randomY);
+    
+    const delay = 2000 + Math.random() * 3000;
+    setTimeout(moveEyes, delay);
+  };
+  
+  moveEyes();
+}
+
+function startLifeSimulation() {
+  setInterval(() => {
+    if (Math.random() < 0.3) {
+      blinkEyes();
+    }
+  }, 3000);
+}
+
 function mapFaceToPupils(face) {
   if (!cameraFeed || cameraFeed.videoWidth === 0 || cameraFeed.videoHeight === 0) return;
   const centerX = face.left + face.width / 2;
@@ -90,6 +150,7 @@ function mapFaceToPupils(face) {
   const normalizedY = (centerY / cameraFeed.videoHeight - 0.5) * 2;
   updatePupilPosition(normalizedX, normalizedY);
 }
+
 
 async function trackFace() {
   if (!cameraFeed || !('FaceDetector' in window)) return;
@@ -169,7 +230,10 @@ window.addEventListener('load', () => {
   document.body.style.background = '#000';
   startRecognition();
   startCameraTracking();
-  startAutoBlink();
+  startDeviceOrientation();
+  startMouseTracking();
+  startExploratoryLook();
+  startLifeSimulation();
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW falló', err));
   }
