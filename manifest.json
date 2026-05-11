@@ -1,15 +1,16 @@
 {
-  "name": "ByNode AI",
-  "short_name": "NodeAI",
-  "start_url": "index.html",
+  "name": "Narbis - Ojos AI",
+  "short_name": "Narbis",
+  "description": "Una PWA con ojos interactivos que escuchan y responden cuando dices Narbis.",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#ff8c00",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "icon.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml"
     }
   ]
 }

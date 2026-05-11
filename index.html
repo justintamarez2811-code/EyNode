@@ -1,22 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
-    <title>ByNode AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Narbis - Ojos AI</title>
+  <style>
+    html, body {
+      background: #000 !important;
+      background-color: #000 !important;
+      background-image: none !important;
+      color: #fff !important;
+      min-height: 100%;
+      width: 100%;
+    }
+  </style>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#000000">
 </head>
 <body>
-    <div id="overlay" onclick="startApp()">Toca para activar a ByNode</div>
-    <div class="app-container">
-        <video id="webcam" autoplay playsinline style="display:none;"></video>
-        <div class="eye-container">
-            <div class="eye" id="left-eye"></div>
-            <div class="eye" id="right-eye"></div>
-        </div>
+  <div class="eyes-container" aria-label="Ojos interactivos de Narbis">
+    <div class="eye left-eye">
+      <div class="pupil"></div>
+      <div class="lid"></div>
     </div>
-    <script src="script.js"></script>
+    <div class="eye right-eye">
+      <div class="pupil"></div>
+      <div class="lid"></div>
+    </div>
+  </div>
+  <video id="cameraFeed" autoplay muted playsinline></video>
+  <script src="app.js"></script>
 </body>
 </html>

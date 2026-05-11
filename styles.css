@@ -1,0 +1,109 @@
+:root {
+  color-scheme: dark;
+  --bg: #000000;
+  --text: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #000 !important;
+  background-color: #000 !important;
+  background-image: none !important;
+  color: var(--text);
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+.eyes-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  padding: 0;
+}
+
+.eye {
+  width: 160px;
+  height: 160px;
+  position: relative;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+
+.eye::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 40%);
+}
+
+.pupil {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.9);
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  transition: transform 0.08s ease;
+}
+
+#cameraFeed {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: #000;
+  transform-origin: top;
+  transform: scaleY(0);
+  transition: transform 0.16s ease;
+  z-index: 2;
+}
+
+.eye.blink .lid {
+  transform: scaleY(1);
+}
+
+.eye.react {
+  animation: pulse-glow 0.7s ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { transform: none; }
+  50% { transform: scale(1.03); }
+}
+
+@media (max-width: 640px) {
+  .eye {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+  }
+}
