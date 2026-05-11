@@ -56,14 +56,15 @@ body {
 
 .pupil {
   position: absolute;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.9);
+  width: 32px;
+  height: 22px;
+  border-radius: 35%;
+  background: transparent;
   transform: translate(-50%, -50%);
   left: 50%;
   top: 50%;
   transition: transform 0.08s ease;
+  display: none;
 }
 
 #cameraFeed {
